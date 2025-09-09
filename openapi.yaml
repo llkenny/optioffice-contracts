@@ -1,0 +1,550 @@
+openapi: 3.1.0
+info:
+  title: OptiOffice API
+  version: 0.2.0
+servers:
+  - url: https://api.optioffice.local/v1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Office:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+      required: [id, organizationId, title]
+    Listing:
+      type: object
+      properties:
+        id:
+          type: string
+        officeId:
+          type: string
+        price:
+          type: number
+        status:
+          type: string
+          enum: [draft, published]
+      required: [id, officeId, price, status]
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        description:
+          type: string
+      required: [id, organizationId, amount, currency]
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        url:
+          type: string
+      required: [id, organizationId, name, url]
+    Lead:
+      type: object
+      properties:
+        id:
+          type: string
+        contactId:
+          type: string
+        channel:
+          type: string
+        status:
+          type: string
+          enum: [new, in_progress, closed]
+      required: [id, contactId, channel, status]
+security:
+  - bearerAuth: []
+paths:
+  /orgs/{orgId}/offices:
+    get:
+      summary: List offices
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Office'
+    post:
+      summary: Create office
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Office'
+      responses:
+        '201':
+          description: Created
+  /orgs/{orgId}/offices/{officeId}:
+    get:
+      summary: Get office
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: officeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Office'
+    put:
+      summary: Update office
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: officeId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Office'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete office
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: officeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+  /orgs/{orgId}/listings:
+    get:
+      summary: List listings
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Listing'
+    post:
+      summary: Create listing
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Listing'
+      responses:
+        '201':
+          description: Created
+  /orgs/{orgId}/listings/{listingId}:
+    get:
+      summary: Get listing
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: listingId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Listing'
+    put:
+      summary: Update listing
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: listingId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Listing'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete listing
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: listingId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+  /orgs/{orgId}/leads:
+    get:
+      summary: List leads
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lead'
+    post:
+      summary: Create lead
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lead'
+      responses:
+        '201':
+          description: Created
+  /orgs/{orgId}/leads/{leadId}:
+    get:
+      summary: Get lead
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: leadId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lead'
+    put:
+      summary: Update lead
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: leadId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lead'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete lead
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: leadId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+  /orgs/{orgId}/payments:
+    get:
+      summary: List payments
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+    post:
+      summary: Create payment
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '201':
+          description: Created
+  /orgs/{orgId}/payments/{paymentId}:
+    get:
+      summary: Get payment
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+    put:
+      summary: Update payment
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete payment
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+  /orgs/{orgId}/documents:
+    get:
+      summary: List documents
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+    post:
+      summary: Upload document
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '201':
+          description: Created
+  /orgs/{orgId}/documents/{documentId}:
+    get:
+      summary: Get document
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+    put:
+      summary: Update document
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete document
+      parameters:
+        - in: path
+          name: orgId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted

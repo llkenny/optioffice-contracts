@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" font-family="Arial" font-size="12">
+  <!-- Users -->
+  <g id="User">
+    <rect x="20" y="20" width="180" height="80" fill="white" stroke="black" />
+    <text x="30" y="40" font-size="14" font-weight="bold">User</text>
+    <text x="30" y="60">id : UUID</text>
+    <text x="30" y="76">email : string</text>
+  </g>
+  <!-- Orgs -->
+  <g id="Org">
+    <rect x="240" y="20" width="180" height="80" fill="white" stroke="black" />
+    <text x="250" y="40" font-size="14" font-weight="bold">Org</text>
+    <text x="250" y="60">id : UUID</text>
+    <text x="250" y="76">ownerId : FK User</text>
+  </g>
+  <!-- OfficeSpace -->
+  <g id="OfficeSpace">
+    <rect x="240" y="150" width="200" height="110" fill="white" stroke="black" />
+    <text x="250" y="170" font-size="14" font-weight="bold">OfficeSpace</text>
+    <text x="250" y="190">id : UUID</text>
+    <text x="250" y="206">orgId : FK Org</text>
+    <text x="250" y="222">title : string</text>
+    <text x="250" y="238">status : enum</text>
+  </g>
+  <!-- Listing -->
+  <g id="Listing">
+    <rect x="240" y="320" width="200" height="110" fill="white" stroke="black" />
+    <text x="250" y="340" font-size="14" font-weight="bold">Listing</text>
+    <text x="250" y="360">id : UUID</text>
+    <text x="250" y="376">officeId : FK OfficeSpace</text>
+    <text x="250" y="392">channel : enum</text>
+  </g>
+  <!-- Lead -->
+  <g id="Lead">
+    <rect x="480" y="320" width="200" height="110" fill="white" stroke="black" />
+    <text x="490" y="340" font-size="14" font-weight="bold">Lead</text>
+    <text x="490" y="360">id : UUID</text>
+    <text x="490" y="376">listingId : FK Listing</text>
+    <text x="490" y="392">status : enum</text>
+  </g>
+  <!-- Payment -->
+  <g id="Payment">
+    <rect x="480" y="150" width="220" height="110" fill="white" stroke="black" />
+    <text x="490" y="170" font-size="14" font-weight="bold">Payment</text>
+    <text x="490" y="190">id : UUID</text>
+    <text x="490" y="206">orgId : FK Org</text>
+    <text x="490" y="222">amount : decimal</text>
+    <text x="490" y="238">status : enum</text>
+  </g>
+  <!-- Document -->
+  <g id="Document">
+    <rect x="720" y="150" width="220" height="110" fill="white" stroke="black" />
+    <text x="730" y="170" font-size="14" font-weight="bold">Document</text>
+    <text x="730" y="190">id : UUID</text>
+    <text x="730" y="206">orgId : FK Org</text>
+    <text x="730" y="222">officeId : FK OfficeSpace</text>
+    <text x="730" y="238">type : enum</text>
+  </g>
+  <!-- BankStatement -->
+  <g id="BankStatement">
+    <rect x="480" y="20" width="220" height="80" fill="white" stroke="black" />
+    <text x="490" y="40" font-size="14" font-weight="bold">BankStatement</text>
+    <text x="490" y="60">id : UUID</text>
+    <text x="490" y="76">orgId : FK Org</text>
+  </g>
+  <!-- MatchingRule -->
+  <g id="MatchingRule">
+    <rect x="720" y="20" width="220" height="80" fill="white" stroke="black" />
+    <text x="730" y="40" font-size="14" font-weight="bold">MatchingRule</text>
+    <text x="730" y="60">id : UUID</text>
+    <text x="730" y="76">orgId : FK Org</text>
+  </g>
+  <!-- MediaAsset -->
+  <g id="MediaAsset">
+    <rect x="20" y="150" width="200" height="110" fill="white" stroke="black" />
+    <text x="30" y="170" font-size="14" font-weight="bold">MediaAsset</text>
+    <text x="30" y="190">id : UUID</text>
+    <text x="30" y="206">ownerType</text>
+    <text x="30" y="222">ownerId : UUID</text>
+    <text x="30" y="238">kind : enum</text>
+  </g>
+  <!-- AuditEvent -->
+  <g id="AuditEvent">
+    <rect x="20" y="320" width="200" height="110" fill="white" stroke="black" />
+    <text x="30" y="340" font-size="14" font-weight="bold">AuditEvent</text>
+    <text x="30" y="360">id : UUID</text>
+    <text x="30" y="376">actor : FK User</text>
+    <text x="30" y="392">ts : timestamp</text>
+  </g>
+
+  <!-- Relations -->
+  <line x1="200" y1="60" x2="240" y2="60" stroke="black" /> <!-- User -> Org owner -->
+  <line x1="340" y1="100" x2="340" y2="150" stroke="black" /> <!-- Org -> OfficeSpace -->
+  <line x1="340" y1="260" x2="340" y2="320" stroke="black" /> <!-- OfficeSpace -> Listing -->
+  <line x1="440" y1="375" x2="480" y2="375" stroke="black" /> <!-- Listing -> Lead -->
+  <line x1="340" y1="205" x2="480" y2="205" stroke="black" /> <!-- OfficeSpace -> Payment (via link) -->
+  <line x1="460" y1="205" x2="720" y2="205" stroke="black" /> <!-- Payment -> Document -->
+  <line x1="340" y1="205" x2="240" y2="205" stroke="black" /> <!-- OfficeSpace -> MediaAsset -->
+  <line x1="140" y1="130" x2="140" y2="150" stroke="black" /> <!-- User -> MediaAsset (owner) maybe? -->
+  <line x1="340" y1="100" x2="480" y2="60" stroke="black" /> <!-- Org -> BankStatement -->
+  <line x1="340" y1="100" x2="720" y2="60" stroke="black" /> <!-- Org -> MatchingRule -->
+  <line x1="140" y1="130" x2="140" y2="320" stroke="black" /> <!-- User -> AuditEvent -->
+</svg>

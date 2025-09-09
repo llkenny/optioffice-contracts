@@ -1,0 +1,15 @@
+name: "🐛 Spec Bug"
+description: Error or mismatch in OpenAPI/spec
+labels: ["type:bug", "area:contracts", "spec:openapi"]
+body:
+  - type: textarea
+    id: issue
+    attributes:
+      label: Problem
+      placeholder: "Схема /auth/login не совпадает с фактическим ответом..."
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro/Context
+      placeholder: "Где заметили, Postman/генератор SDK и т.д."

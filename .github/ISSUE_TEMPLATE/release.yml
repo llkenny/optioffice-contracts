@@ -1,0 +1,24 @@
+name: "🏷 Contracts Release"
+description: Prepare a tagged release of contracts
+labels: ["area:contracts", "type:chore"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version (SemVer)
+      placeholder: "1.2.0"
+    validations: { required: true }
+  - type: textarea
+    id: changes
+    attributes:
+      label: Changelog
+      placeholder: "- Добавлен ...\n- Помечен как deprecated ..."
+    validations: { required: true }
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: OpenAPI lint passed
+        - label: Postman/SDKs regenerated
+        - label: BREAKING noted and migration path included
