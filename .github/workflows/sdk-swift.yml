@@ -1,0 +1,1 @@
+openapi-generator-cli generate -g swift5 -i openapi.yaml -o swift-sdk

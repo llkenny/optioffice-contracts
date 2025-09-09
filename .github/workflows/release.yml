@@ -1,0 +1,88 @@
+name: Contracts Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "SemVer (e.g. 1.2.0)"
+        required: true
+  push:
+    tags:
+      - "contracts/v*"
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install CLIs
+        run: |
+          npm i -g @redocly/cli @openapitools/openapi-generator-cli openapi-typescript openapi-to-postmanv2
+
+      - name: Determine version/tag
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=contracts/v${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate OpenAPI
+        run: redocly lint openapi.yaml
+
+      - name: Generate Postman collection
+        run: openapi-to-postmanv2 -s openapi.yaml -o generated/postman.collection.json
+
+      - name: Generate TypeScript SDK (axios)
+        run: |
+          rm -rf generated/ts-sdk
+          openapi-generator-cli generate -i openapi.yaml -g typescript-axios -o generated/ts-sdk --skip-validate-spec
+
+      - name: Generate Swift SDK
+        run: |
+          rm -rf generated/swift-sdk
+          openapi-generator-cli generate -i openapi.yaml -g swift5 -o generated/swift-sdk --additional-properties=useSPMFileStructure=true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contracts-artifacts
+          path: generated
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: ${{ steps.ver.outputs.tag }}
+          files: |
+            generated/postman.collection.json
+            generated/ts-sdk/**
+            generated/swift-sdk/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify-dependents:
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend & iOS repos (repository_dispatch)
+        if: ${{ always() }}
+        run: |
+          curl -X POST -H "Authorization: token ${{ secrets.ORG_PAT_TOKEN }}" \
+               -H "Accept: application/vnd.github+json" \
+               https://api.github.com/repos/<org>/optioffice-backend/dispatches \
+               -d '{"event_type":"contracts-released","client_payload":{"tag":"${{ needs.build-and-release.outputs.tag }}"}}'
+          curl -X POST -H "Authorization: token ${{ secrets.ORG_PAT_TOKEN }}" \
+               -H "Accept: application/vnd.github+json" \
+               https://api.github.com/repos/<org>/optioffice-ios/dispatches \
+               -d '{"event_type":"contracts-released","client_payload":{"tag":"${{ needs.build-and-release.outputs.tag }}"}}'
