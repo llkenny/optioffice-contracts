@@ -2,6 +2,19 @@ openapi: 3.1.0
 info:
   title: OptiOffice API
   version: 0.3.0
+  description: |
+    ## Authorization
+    - Creating an organization requires an authenticated user; the creator becomes its owner.
+    - Updating an organization is restricted to organization owners and administrators.
+
+    ## Error Model
+    All errors use [RFC7807](https://datatracker.ietf.org/doc/html/rfc7807) Problem Details with `application/problem+json`.
+    The `type` field is a URL identifying the error category:
+    - https://api.optioffice.local/errors/validation
+    - https://api.optioffice.local/errors/unauthorized
+    - https://api.optioffice.local/errors/forbidden
+    - https://api.optioffice.local/errors/not-found
+    - https://api.optioffice.local/errors/conflict
 servers:
   - url: https://api.optioffice.local/v1
 components:
@@ -125,6 +138,12 @@ components:
         type:
           type: string
           format: uri
+          enum:
+            - https://api.optioffice.local/errors/validation
+            - https://api.optioffice.local/errors/unauthorized
+            - https://api.optioffice.local/errors/forbidden
+            - https://api.optioffice.local/errors/not-found
+            - https://api.optioffice.local/errors/conflict
         title:
           type: string
         status:
@@ -136,7 +155,7 @@ components:
           format: uri
       required: [type, title, status]
       example:
-        type: https://example.com/probs/conflict
+        type: https://api.optioffice.local/errors/conflict
         title: Conflict
         status: 409
         detail: Resource already exists
@@ -146,6 +165,9 @@ paths:
   /orgs:
     post:
       summary: Create organization
+      description: |
+        Creates a new organization. Requires an authenticated user; the creator becomes its owner.
+        See [Authorization](#authorization) and [Error Model](#error-model).
       requestBody:
         required: true
         content:
@@ -230,6 +252,9 @@ paths:
                 $ref: '#/components/schemas/Problem'
     patch:
       summary: Update organization
+      description: |
+        Updates organization details. Only organization owners or administrators may patch.
+        See [Authorization](#authorization) and [Error Model](#error-model).
       parameters:
         - in: path
           name: id

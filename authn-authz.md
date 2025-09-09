@@ -33,6 +33,9 @@ sequenceDiagram
 ## Roles & Policies
 Users belong to one or more organizations and receive role‑based access:
 
+- Any authenticated user may create an organization and becomes its owner.
+- Updating organization settings is restricted to owners and administrators.
+
 | Resource | Owner | Collaborator |
 |----------|-------|--------------|
 | Organizations | create/read/update/delete | read |
