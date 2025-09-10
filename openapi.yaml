@@ -132,6 +132,58 @@ components:
       minProperties: 1
       example:
         name: New Name
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+      required: [id, email]
+      example:
+        id: usr_123
+        email: user@example.com
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          pattern: '^(?=.*[A-Za-z])(?=.*\\d).+$'
+          description: |
+            Must be at least 8 characters long and contain at least one letter and one digit.
+        deviceId:
+          type: string
+        name:
+          type: string
+      required: [email, password]
+      example:
+        email: user@example.com
+        password: Passw0rd1
+        deviceId: device-abc
+        name: Alice
+    RegisterResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+      required: [user]
+      example:
+        user:
+          id: usr_123
+          email: user@example.com
+    VerifyRequest:
+      type: object
+      properties:
+        token:
+          type: string
+      required: [token]
+      example:
+        token: ABCDEF123456
     Problem:
       type: object
       properties:
@@ -162,6 +214,103 @@ components:
 security:
   - bearerAuth: []
 paths:
+  /auth/register:
+    post:
+      summary: Register user
+      description: |
+        Registers a new user account.
+        See [Authentication & Authorization](authn-authz.md) for security details.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              email: user@example.com
+              password: Passw0rd1
+              deviceId: device-abc
+              name: Alice
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+              example:
+                user:
+                  id: usr_123
+                  email: user@example.com
+        '202':
+          description: Accepted - verification required
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '429':
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /auth/verify:
+    post:
+      summary: Verify registration
+      description: |
+        Verifies a user's email address using a token.
+        See [Authentication & Authorization](authn-authz.md) for security details.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+            example:
+              token: ABCDEF123456
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '429':
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /orgs:
     post:
       summary: Create organization
