@@ -1,8 +1,9 @@
 # AuthN/AuthZ Specification
 
 ## Registration & Login
-- **Registration**: `POST /auth/register` with email and password creates a new user account. Duplicate emails are rejected.
-- **Login**: `POST /auth/login` verifies credentials and returns an access and refresh JWT pair.
+- **Registration**: `POST /auth/register` with email, password, and optional `deviceId` creates a new user account. No tokens are issued. If verification is required the endpoint returns `202` and the user must confirm via `POST /auth/verify` before logging in.
+- **Verification**: `POST /auth/verify` with the emailed token activates the account.
+- **Login**: `POST /auth/login` verifies credentials and returns an access and refresh JWT pair bound to the supplied `deviceId`.
 
 ### Sequence: Login
 ```mermaid
@@ -29,6 +30,9 @@ sequenceDiagram
     A->>A: Validate & rotate token
     A-->>C: new access_token + refresh_token
 ```
+
+## Device Binding
+Refresh tokens are bound to the `deviceId` supplied during registration and login. Each client device should generate a stable identifier and include it with token refresh calls. Using a different `deviceId` invalidates the refresh token and requires a fresh login.
 
 ## Roles & Policies
 Users belong to one or more organizations and receive role‑based access:

@@ -158,6 +158,9 @@ components:
             Must be at least 8 characters long and contain at least one letter and one digit.
         deviceId:
           type: string
+          description: |
+            Client generated identifier for the device. Refresh tokens are bound to this value.
+            See [Device Binding](authn-authz.md#device-binding).
         name:
           type: string
       required: [email, password]
@@ -218,8 +221,11 @@ paths:
     post:
       summary: Register user
       description: |
-        Registers a new user account.
-        See [Authentication & Authorization](authn-authz.md) for security details.
+        Registers a new user account. No access or refresh tokens are issued.
+        If verification is required the endpoint returns `202` and the user must call `POST /auth/verify`
+        before logging in to obtain tokens.
+        See [Authentication & Authorization](authn-authz.md#registration--login) for flow details and
+        [Device Binding](authn-authz.md#device-binding).
       security: []
       requestBody:
         required: true
@@ -234,7 +240,7 @@ paths:
               name: Alice
       responses:
         '201':
-          description: Created
+          description: Created - account ready for login
           content:
             application/json:
               schema:
@@ -244,7 +250,7 @@ paths:
                   id: usr_123
                   email: user@example.com
         '202':
-          description: Accepted - verification required
+          description: Accepted - verification required before login
         '400':
           description: Bad Request
           content:
@@ -273,8 +279,9 @@ paths:
     post:
       summary: Verify registration
       description: |
-        Verifies a user's email address using a token.
-        See [Authentication & Authorization](authn-authz.md) for security details.
+        Verifies a user's email address using a token. Successful verification enables login
+        to receive access and refresh tokens.
+        See [Authentication & Authorization](authn-authz.md#registration--login) for flow details.
       security: []
       requestBody:
         required: true
